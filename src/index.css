@@ -1,0 +1,165 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   SISTEMA DE DISEÑO
+   Todo lo que está dentro de @theme se convierte en clases de Tailwind:
+   --color-ink-950 → bg-ink-950, text-ink-950...
+   --font-serif    → font-serif
+   =========================================================================== */
+@theme {
+  /* Fondo y superficies: negro con un toque azul para que case con el logo */
+  --color-ink-950: #06070b;
+  --color-ink-900: #0b0d13;
+  --color-ink-800: #11141c;
+  --color-ink-700: #1a1e29;
+
+  /* Texto */
+  --color-paper: #eef1f7;
+  --color-muted: #8b91a1;
+  --color-dim: #555b6b;
+
+  /* Acento: los tres azules sacados del logo PM */
+  --color-electric: #1f7bff;
+  --color-cyan: #2bc1ff;
+  --color-deep: #0c3dff;
+
+  /* Tipografías (se instalan con npm, ver main.jsx) */
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', ui-serif, Georgia, serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-ink-950);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-ink-950 font-sans text-paper antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-electric);
+    color: white;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* Mientras el cursor personalizado está activo se oculta el del sistema */
+  .has-custom-cursor,
+  .has-custom-cursor a,
+  .has-custom-cursor button {
+    cursor: none;
+  }
+}
+
+/* Contenedor con el ancho máximo de la web */
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 88rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (width >= 48rem) {
+    .wrap {
+      padding-inline: 2.5rem;
+    }
+  }
+}
+
+/* Etiquetas pequeñas en monoespaciada (números de sección, metadatos) */
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+/* Degradado del logo aplicado a texto */
+@utility text-brand {
+  background-image: linear-gradient(100deg, var(--color-deep), var(--color-electric) 45%, var(--color-cyan));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Cuadrícula muy suave de fondo, como un papel milimetrado */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+/* Grano encima de toda la web: le quita el aspecto "plano" de pantalla */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Texto con efecto de "rodillo" al pasar el ratón (enlaces del menú) */
+.roll {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+}
+.roll > span {
+  display: block;
+  transition: transform 0.5s var(--ease-out-expo);
+}
+.roll > span:last-child {
+  position: absolute;
+  inset: 0;
+  transform: translateY(105%);
+}
+.roll:hover > span:first-child,
+a:hover > .roll > span:first-child,
+a:focus-visible > .roll > span:first-child {
+  transform: translateY(-105%);
+}
+.roll:hover > span:last-child,
+a:hover > .roll > span:last-child,
+a:focus-visible > .roll > span:last-child {
+  transform: translateY(0);
+}
+
+/* Barra de desplazamiento horizontal del carrusel en móvil */
+.snap-track {
+  scrollbar-width: none;
+}
+.snap-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Lenis (scroll suave) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+/* Accesibilidad: si el sistema pide menos movimiento, sin transiciones CSS */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
